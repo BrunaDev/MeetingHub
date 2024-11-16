@@ -34,27 +34,20 @@ public class FuncionarioDAO extends ConnectionDAO {
         return sucesso;
     }
 
-    //------------------------SELECIONAR FUNCIONARIOS POR CARGO----------------------------
-    public boolean selectFuncionarioCargo(String cargo) {
+    //------------------------BUSCAR FUNCIONARIO NO DATABASE----------------------------
+    public String selectFuncionarioNome(String nomeFuncionario) {
         connectToDB();
-        boolean verificado = false;
+        String nome = null;
 
-        String sql = "SELECT * FROM Funcionario WHERE cargo = ?";
+        String sql = "SELECT nome FROM Funcionario WHERE nome = ?";
 
         try {
             pst = con.prepareStatement(sql);
-            pst.setString(1, cargo);
+            pst.setString(1, nomeFuncionario);
             rs = pst.executeQuery();
 
-            while (rs.next()) {
-                Funcionario funcionarioTemp = new Funcionario(
-                        rs.getString("nome"),
-                        rs.getString("email"),
-                        rs.getString("cargo")
-                );
-                if (funcionarioTemp.getCargo().equals(cargo)) {
-                    verificado = true;
-                }
+            if (rs.next()) {
+                nome = rs.getString("nome");
             }
         } catch (SQLException ex) {
             System.out.println("Erro = " + ex.getMessage());
@@ -67,6 +60,7 @@ public class FuncionarioDAO extends ConnectionDAO {
                 System.out.println("Erro ao fechar conexão = " + ex.getMessage());
             }
         }
-        return verificado;
+        return nome;
     }
+
 }

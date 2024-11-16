@@ -1,128 +1,134 @@
 package br.inatel;
 
+import br.inatel.DAO.ConnectionDAO;
+import br.inatel.DAO.FuncionarioDAO;
+import br.inatel.DAO.RecursoDAO;
+import br.inatel.DAO.ReservaDAO;
+import br.inatel.DAO.SalaDAO;
+import br.inatel.Model.Funcionario;
+import br.inatel.Model.Recurso;
+
 import java.util.Scanner;
-import br.inatel.Model.*;
-import br.inatel.DAO.*;
 
 public class Main {
     public static void main(String[] args) {
+        ConnectionDAO connectionDAO = new ConnectionDAO();
+        connectionDAO.connectToDB();
+
+        // Instanciando DAOs
+        SalaDAO salaDAO = new SalaDAO();
+        ReservaDAO reservaDAO = new ReservaDAO();
+        RecursoDAO recursoDAO = new RecursoDAO();
+        FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
+
         Scanner sc = new Scanner(System.in);
         boolean flag = true;
-        boolean flag2;
-        boolean flag3;
-
-        FuncionarioDAO funcionarioDAO = new FuncionarioDAO();
-        RecursoDAO recursoDAO = new RecursoDAO();
-        ReservaDAO reservaDAO = new ReservaDAO();
-        SalaDAO salaDAO = new SalaDAO();
-        SalaHasRecursoDAO salaHasRecursoDAO = new SalaHasRecursoDAO();
-
-        String nome, email, cargo;
-        int sala_id;
-        String data_hora_inicio, data_hora_fim;
-        int idPedido;
 
         while (flag) {
             System.out.println("\n+------------------------------------------------------------+");
-            System.out.println("|                   Bem-vindo ao Sistema                     |");
-            System.out.println("|                de Reservas e Gerenciamento                 |");
+            System.out.println("|                       Bem vindo ao                         |");
+            System.out.println("|                   Sistema do MeetingHub                    |");
             System.out.println("+------------------------------------------------------------+");
             System.out.println("\nPor favor selecione uma das opções abaixo: ");
-            System.out.println("1 - Solicitar sala");
-            System.out.println("2 - Gerenciar recursos");
-            System.out.println("3 - Sair");
+            System.out.println("1 - Solicitar sala para reunião");
+            System.out.println("2 - Solicitar recursos");
+            System.out.println("3 - Adicionar novo funcionário");
+            System.out.println("4 - Verificar reservas");
+            System.out.println("5 - Sair");
             System.out.print("\nOpção: ");
             int op = sc.nextInt();
             sc.nextLine();
 
             switch (op) {
                 case 1:
-                    System.out.println("\n================ Solicitação de Sala ====================");
-                    System.out.println("\nPor favor, entre com as informações:");
+                    System.out.println("\n==============================================================");
+                    System.out.println("                       Solicitar Sala                          ");
+                    System.out.println("==============================================================");
 
-                    System.out.print("Nome: ");
-                    nome = sc.nextLine();
+                    System.out.println("\nPor favor entre com as informações abaixo: ");
+                    System.out.print("\nEntre com seu nome: ");
+                    String nome = sc.nextLine();
 
-                    System.out.print("Cargo: ");
-                    cargo = sc.nextLine();
+                    System.out.print("Entre com o seu email: ");
+                    String email = sc.nextLine();
 
-                    System.out.print("Email: ");
-                    email = sc.nextLine();
+                    System.out.print("Escolha a sala (1 - Sala de reunião, 2 - Sala de recreação, 3 - Sala de apresentação): ");
+                    int nomeSala = sc.nextInt();
+                    sc.nextLine();
 
-                    System.out.println("Escolha a sala (1 - Sala de reunião, 2 - Sala de recreação, 3 - Sala de apresentação): ");
-                    sala_id = sc.nextInt();
-                    sc.nextLine(); // Limpar o buffer do scanner
+                    System.out.print("Qual o horário da reunião? ");
+                    String data_hora_inicio = sc.nextLine();
 
-                    System.out.print("Data e hora de início (formato: AAAA-MM-DD HH:MM): ");
-                    data_hora_inicio = sc.nextLine();
+                    System.out.print("Quando a reunião acaba? ");
+                    String data_hora_fim = sc.nextLine();
 
-                    System.out.print("Data e hora de término (formato: AAAA-MM-DD HH:MM): ");
-                    data_hora_fim = sc.nextLine();
-
-                    Funcionario funcionario = new Funcionario(nome, email, cargo);
+                    Funcionario funcionario = new Funcionario(nome, email, "");
                     funcionarioDAO.insertFuncionario(funcionario);
 
-                    Reserva reserva = new Reserva(data_hora_inicio, data_hora_fim, sala_id);
-                    reservaDAO.insertReserva(reserva);
-                    System.out.println("Sala reservada com sucesso!");
                     break;
 
                 case 2:
-                    System.out.print("\nEntre com o ID da sala para gerenciar recursos: ");
-                    sala_id = sc.nextInt();
+                    System.out.println("\n==============================================================");
+                    System.out.println("                       Solicitar Recurso                       ");
+                    System.out.println("==============================================================");
 
-                    if (reservaDAO.selectReservasPorSala(sala_id)) {
-                        System.out.println("\n================ Gerenciamento de Recursos =================");
+                    System.out.print("Informe o nome do recurso: ");
+                    String nomeRecurso = sc.nextLine();
 
-                        flag2 = true;
-                        while (flag2) {
-                            System.out.println("\n1 - Verificar recursos disponíveis");
-                            System.out.println("2 - Solicitar recurso");
-                            System.out.println("3 - Devolver recurso");
-                            System.out.println("4 - Voltar");
+                    System.out.print("Informe a quantidade necessária: ");
+                    String quantidade = sc.nextLine();
 
-                            System.out.print("\nOpção: ");
-                            op = sc.nextInt();
-                            sc.nextLine();
+                    // Criação do recurso
+                    Recurso recurso = new Recurso(nomeRecurso, quantidade);
 
-                            switch (op) {
-                                case 1:
-                                    System.out.println("\n================ Recursos Disponíveis ==================");
-                                    recursoDAO.selectRecursoPorSala(sala_id);
-                                    break;
+                    // Inserir o recurso no banco de dados
+                    boolean sucesso = recursoDAO.insertRecurso(recurso);
 
-                                case 2:
-                                    System.out.print("Insira o nome do recurso que deseja solicitar: ");
-                                    String nomeRecurso = sc.nextLine();
-                                    salaHasRecursoDAO.solicitarRecurso(sala_id, nomeRecurso);
-                                    break;
-
-                                case 3:
-                                    System.out.print("Insira o nome do recurso que deseja devolver: ");
-                                    nomeRecurso = sc.nextLine();
-                                    salaHasRecursoDAO.devolverRecurso(sala_id, nomeRecurso);
-                                    break;
-
-                                case 4:
-                                    flag2 = false;
-                                    break;
-                            }
-                        }
+                    if (sucesso) {
+                        System.out.println("Recurso solicitado com sucesso!");
                     } else {
-                        System.out.println("Nenhuma reserva encontrada para essa sala.");
+                        System.out.println("Falha ao solicitar o recurso.");
                     }
+
                     break;
 
                 case 3:
+                    System.out.println("\n==============================================================");
+                    System.out.println("                  Adicionar Novo Funcionário                  ");
+                    System.out.println("==============================================================");
+
+                    System.out.print("Informe o nome do funcionário: ");
+                    nome = sc.nextLine();
+
+                    System.out.print("Informe o email do funcionário: ");
+                    email = sc.nextLine();
+
+                    System.out.print("Informe o cargo do funcionário: ");
+                    String cargo = sc.nextLine();
+
+                    Funcionario novoFuncionario = new Funcionario(nome, email, cargo);
+                    boolean funcionarioSucesso = funcionarioDAO.insertFuncionario(novoFuncionario);
+
+                    if (funcionarioSucesso) {
+                        System.out.println("Funcionário adicionado com sucesso!");
+                    } else {
+                        System.out.println("Falha ao adicionar o funcionário.");
+                    }
+                    break;
+
+                case 4:
+                    break;
+
+                case 5:
+                    System.out.println("Saindo do sistema. Até logo!");
                     flag = false;
                     break;
 
                 default:
-                    System.out.println("Opção inválida, tente novamente.");
+                    System.out.println("Opção inválida! Tente novamente.");
                     break;
             }
         }
-        System.out.println("\nPrograma finalizado.");
         sc.close();
     }
 }
