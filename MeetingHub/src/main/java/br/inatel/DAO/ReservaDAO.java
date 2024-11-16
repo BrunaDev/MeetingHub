@@ -69,4 +69,59 @@ public class ReservaDAO extends ConnectionDAO {
         }
         return verificado;
     }
+
+    //------------------------ATUALIZAR RESERVAS----------------------------
+    public boolean updateHorarioReserva(int reservaId, String novoInicio, String novoFim) {
+        connectToDB();
+        String sql = "UPDATE Reserva SET data_hora_inicio = ?, data_hora_fim = ? WHERE id = ?";
+
+        try {
+            pst = con.prepareStatement(sql);
+            pst.setString(1, novoInicio);
+            pst.setString(2, novoFim);
+            pst.setInt(3, reservaId);
+
+            int rowsAffected = pst.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException ex) {
+            System.out.println("Erro ao atualizar horário da reserva = " + ex.getMessage());
+            return false;
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                System.out.println("Erro ao fechar conexão = " + ex.getMessage());
+            }
+        }
+    }
+
+    //------------------------SELECIONAR TODAS AS RESERVAS----------------------------
+    public void selectAllReservas() {
+        connectToDB();
+        String sql = "SELECT * FROM Reserva";
+
+        try {
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                System.out.println("ID: " + rs.getInt("id") +
+                        ", Sala: " + rs.getInt("Sala_id") +
+                        ", Início: " + rs.getString("data_hora_inicio") +
+                        ", Fim: " + rs.getString("data_hora_fim"));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erro ao consultar reservas = " + ex.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                System.out.println("Erro ao fechar conexão = " + ex.getMessage());
+            }
+        }
+    }
 }

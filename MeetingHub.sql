@@ -120,4 +120,20 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 SHOW TABLES;
-SELECT * FROM funcionario; 
+SELECT * FROM funcionario;
+
+-- Inserir salas
+INSERT INTO `MeetingHub`.`Sala` (id, nome, capacidade, recursos_disponiveis) 
+VALUES 
+    ('1', 'Sala de reunião', '20', 'TV, Quadro Branco, Microfone'),
+    ('2', 'Sala de recreação', '50', 'TV, Quadro Branco, Microfone, Folhas'),
+    ('3', 'Sala de apresentação', '100', 'TV, Quadro Branco, Microfone, Projetor');
+
+-- Inserir recursos
+INSERT INTO `MeetingHub`.`Recurso` (id, nome, quantidade) 
+VALUES 
+    ('1', 'TV', '5'),
+    ('2', 'Quadro Branco', '10'),
+    ('3', 'Microfone', '15'),
+    ('4', 'Folhas', '200'),
+    ('5', 'Projetor', '5');
