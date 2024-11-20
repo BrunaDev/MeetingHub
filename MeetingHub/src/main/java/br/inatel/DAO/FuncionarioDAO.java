@@ -11,7 +11,7 @@ public class FuncionarioDAO extends ConnectionDAO {
     public boolean insertFuncionario(Funcionario funcionario) {
         connectToDB();
 
-        String sql = "INSERT INTO Funcionario (nome, email, cargo) VALUES (?,?,?)";
+        String sql = "INSERT INTO funcionario (nome, email, cargo) VALUES (?,?,?)";
 
         try {
             pst = con.prepareStatement(sql);
@@ -35,32 +35,28 @@ public class FuncionarioDAO extends ConnectionDAO {
     }
 
     //------------------------BUSCAR FUNCIONARIO NO DATABASE----------------------------
-    public String selectFuncionarioNome(String nomeFuncionario) {
+    // Erro: Erro de conexão = Unknown column 'email' in 'field list'
+    public boolean selectFuncionario(String emailFuncionario) {
         connectToDB();
-        String nome = null;
+        String sql = "SELECT * FROM funcionario WHERE email = ?";
 
-        String sql = "SELECT nome FROM Funcionario WHERE nome = ?";
-
+        boolean exist;
         try {
             pst = con.prepareStatement(sql);
-            pst.setString(1, nomeFuncionario);
-            rs = pst.executeQuery();
-
-            if (rs.next()) {
-                nome = rs.getString("nome");
-            }
+            pst.setString(1, emailFuncionario);
+            pst.execute();
+            exist = true;
         } catch (SQLException ex) {
-            System.out.println("Erro = " + ex.getMessage());
+            System.out.println("Erro de conexão = " + ex.getMessage());
+            exist = false;
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (pst != null) pst.close();
                 if (con != null) con.close();
-            } catch (SQLException ex) {
-                System.out.println("Erro ao fechar conexão = " + ex.getMessage());
+                if (pst != null) pst.close();
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexão = " + e.getMessage());
             }
         }
-        return nome;
+        return exist;
     }
-
 }

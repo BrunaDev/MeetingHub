@@ -6,15 +6,16 @@ import br.inatel.DAO.ConnectionDAO;
 public class SalaHasRecursoDAO extends ConnectionDAO {
 
     //------------------------INSERIR NOVA RELAÇÂO NA TABELA 1:M DE SALA E RECURSOS----------------------------
-    public boolean insertSalaRecurso(int salaId, int recursoId) {
+    public boolean insertSalaRecurso(int salaId, int recursoId, String nome) {
         connectToDB();
-        String sql = "INSERT INTO Sala_has_Recurso (Sala_Id, Recurso_Id) VALUES (?, ?)";
+        String sql = "INSERT INTO sala_has_recurso (sala_Id, recurso_Id, nome) VALUES (?, ?, ?)";
 
         boolean sucesso;
         try {
             pst = con.prepareStatement(sql);
             pst.setInt(1, salaId);
             pst.setInt(2, recursoId);
+            pst.setString(3, nome);
             pst.execute();
             sucesso = true;
         } catch (SQLException ex) {
@@ -35,7 +36,7 @@ public class SalaHasRecursoDAO extends ConnectionDAO {
     public boolean deleteSalaRecurso(int salaId, int recursoId) {
         connectToDB();
         boolean sucesso;
-        String sql = "DELETE FROM Sala_has_Recurso WHERE Sala_Id=? AND Recurso_Id=?";
+        String sql = "DELETE FROM sala_has_recurso WHERE Sala_Id=? AND Recurso_Id=?";
 
         try {
             pst = con.prepareStatement(sql);
@@ -63,7 +64,7 @@ public class SalaHasRecursoDAO extends ConnectionDAO {
         int i = 0;
         connectToDB();
 
-        String sql = "SELECT Recurso_Id FROM Sala_has_Recurso WHERE Sala_Id = ?";
+        String sql = "SELECT recurso_Id FROM sala_has_recurso WHERE sala_Id = ?";
 
         try {
             pst = con.prepareStatement(sql);
@@ -71,7 +72,7 @@ public class SalaHasRecursoDAO extends ConnectionDAO {
             rs = pst.executeQuery();
 
             while (rs.next()) {
-                idRecursos[i] = rs.getInt("Recurso_Id");
+                idRecursos[i] = rs.getInt("recurso_Id");
                 i++;
             }
 

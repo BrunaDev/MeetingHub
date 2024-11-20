@@ -7,7 +7,7 @@ import br.inatel.DAO.ReservaDAO;
 import br.inatel.DAO.SalaDAO;
 import br.inatel.DAO.SalaHasRecursoDAO;
 import br.inatel.Model.Funcionario;
-import br.inatel.Model.Recurso;
+import br.inatel.Model.Reserva;
 
 import java.util.Scanner;
 
@@ -48,14 +48,12 @@ public class Main {
                     System.out.println("==============================================================");
 
                     System.out.println("\nPor favor entre com as informações abaixo: ");
-                    System.out.print("\nEntre com seu nome: ");
-                    String nome = sc.nextLine();
 
                     System.out.print("Entre com o seu email: ");
-                    String email = sc.nextLine();
+                    String emailFunc = sc.nextLine();
 
                     System.out.print("Escolha a sala (1 - Sala de reunião, 2 - Sala de recreação, 3 - Sala de apresentação): ");
-                    int nomeSala = sc.nextInt();
+                    int idSala = sc.nextInt();
                     sc.nextLine();
 
                     System.out.print("Qual o horário da reunião? ");
@@ -64,8 +62,15 @@ public class Main {
                     System.out.print("Quando a reunião acaba? ");
                     String data_hora_fim = sc.nextLine();
 
-                    Funcionario funcionario = new Funcionario(nome, email, "");
-                    funcionarioDAO.insertFuncionario(funcionario);
+                    boolean exist = funcionarioDAO.selectFuncionario(emailFunc);
+
+                    if(exist){
+                        Reserva novaReserva = new Reserva(data_hora_inicio, data_hora_fim, idSala, emailFunc);
+                        reservaDAO.insertReserva(novaReserva);
+                        //precisamos atualizar o funcionario para passar a reserva_id
+                    } else {
+                        System.out.println("Falha ao solicitar sala.");
+                    }
 
                     break;
 
@@ -74,17 +79,23 @@ public class Main {
                     System.out.println("                       Solicitar Recurso                       ");
                     System.out.println("==============================================================");
 
-                    System.out.print("Informe o nome do recurso: ");
-                    String nomeRecurso = sc.nextLine();
+                    // mostrar uma lista contendo o nome do recurso, seu id e sua quantidade
+                    System.out.println("Todos os recursos:");
+                    recursoDAO.listRecurso();
 
-                    System.out.print("Informe a quantidade necessária: ");
-                    String quantidade = sc.nextLine();
+                    System.out.print("Nome do solicitante: ");
+                    String nomeSolicitante = sc.nextLine();
 
-                    // Criação do recurso
-                    Recurso recurso = new Recurso(nomeRecurso, quantidade);
+                    System.out.print("Informe o ID da sala: ");
+                    int salaId = sc.nextInt();
 
-                    // Inserir o recurso no banco de dados
-                    boolean sucesso = recursoDAO.insertRecurso(recurso);
+                    System.out.print("Informe o ID do recurso: ");
+                    int recursoId = sc.nextInt();
+
+                    // System.out.print("Informe a quantidade necessária: ");
+                    // int quantidade = sc.nextInt();
+
+                    boolean sucesso = salaHasRecursoDAO.insertSalaRecurso(salaId, recursoId, nomeSolicitante);
 
                     if (sucesso) {
                         System.out.println("Recurso solicitado com sucesso!");
@@ -100,10 +111,10 @@ public class Main {
                     System.out.println("==============================================================");
 
                     System.out.print("Informe o nome do funcionário: ");
-                    nome = sc.nextLine();
+                    String nome = sc.nextLine();
 
                     System.out.print("Informe o email do funcionário: ");
-                    email = sc.nextLine();
+                    String email = sc.nextLine();
 
                     System.out.print("Informe o cargo do funcionário: ");
                     String cargo = sc.nextLine();
@@ -119,82 +130,92 @@ public class Main {
                     break;
 
                 case 4:
-                    System.out.println("\n==============================================================");
-                    System.out.println("                    Gerenciamento de Reservas                 ");
-                    System.out.println("==============================================================");
+                    boolean subFlag = true;
 
-                    System.out.println("Selecione uma opção:");
-                    System.out.println("1 - Visualizar reservas por sala");
-                    System.out.println("2 - Devolver recurso (deletar relação sala-recurso)");
-                    System.out.println("3 - Atualizar horário de reserva");
-                    System.out.println("4 - Visualizar todos os agendamentos");
+                    while (subFlag) {
+                        System.out.println("\n==============================================================");
+                        System.out.println("                    Gerenciamento de Reservas                 ");
+                        System.out.println("==============================================================");
 
-                    int subOp = sc.nextInt();
-                    sc.nextLine();
+                        System.out.println("Selecione uma opção:");
+                        System.out.println("1 - Visualizar reservas por sala");
+                        System.out.println("2 - Devolver recurso (deletar relação sala-recurso)");
+                        System.out.println("3 - Atualizar horário de reserva");
+                        System.out.println("4 - Visualizar todos os agendamentos");
+                        System.out.println("5 - Sair");
 
-                    switch (subOp) {
-                        case 1:
-                            // Visualizar reservas por sala
-                            System.out.print("Digite o ID da sala para verificar as reservas: ");
-                            int salaId = sc.nextInt();
-                            sc.nextLine();
+                        int subOp = sc.nextInt();
+                        sc.nextLine();
 
-                            boolean reservasEncontradas = reservaDAO.selectReservasPorSala(salaId);
+                        switch (subOp) {
+                            case 1:
+                                // Visualizar reservas por sala
+                                System.out.print("Digite o ID da sala para verificar as reservas: ");
+                                int salaIdReserva = sc.nextInt();
+                                sc.nextLine();
 
-                            if (reservasEncontradas) {
-                                System.out.println("Reservas encontradas para a sala " + salaId + ".");
-                            } else {
-                                System.out.println("Nenhuma reserva encontrada para a sala " + salaId + ".");
-                            }
-                            break;
+                                boolean reservasEncontradas = reservaDAO.selectReservasPorSala(salaIdReserva);
 
-                        case 2:
-                            // Devolver recurso (remover relação sala-recurso)
-                            System.out.print("Digite o ID da sala: ");
-                            int salaParaDevolucao = sc.nextInt();
-                            sc.nextLine();
-                            System.out.print("Digite o ID do recurso a ser devolvido: ");
-                            int recursoParaDevolucao = sc.nextInt();
-                            sc.nextLine();
+                                if (reservasEncontradas) {
+                                    System.out.println("Reservas encontradas para a sala " + salaIdReserva + ".");
+                                } else {
+                                    System.out.println("Nenhuma reserva encontrada para a sala " + salaIdReserva + ".");
+                                }
+                                break;
 
-                            boolean recursoDevolvido = salaHasRecursoDAO.deleteSalaRecurso(salaParaDevolucao, recursoParaDevolucao);
+                            case 2:
+                                // Devolver recurso (remover relação sala-recurso)
+                                System.out.print("Digite o ID da sala: ");
+                                int salaParaDevolucao = sc.nextInt();
+                                sc.nextLine();
+                                System.out.print("Digite o ID do recurso a ser devolvido: ");
+                                int recursoParaDevolucao = sc.nextInt();
+                                sc.nextLine();
 
-                            if (recursoDevolvido) {
-                                System.out.println("Recurso devolvido com sucesso.");
-                            } else {
-                                System.out.println("Falha ao devolver o recurso.");
-                            }
-                            break;
+                                boolean recursoDevolvido = salaHasRecursoDAO.deleteSalaRecurso(salaParaDevolucao, recursoParaDevolucao);
 
-                        case 3:
-                            // Atualizar horário de reserva
-                            System.out.print("Digite o ID da reserva a ser atualizada: ");
-                            int reservaId = sc.nextInt();
-                            sc.nextLine();
+                                if (recursoDevolvido) {
+                                    System.out.println("Recurso devolvido com sucesso.");
+                                } else {
+                                    System.out.println("Falha ao devolver o recurso.");
+                                }
+                                break;
 
-                            System.out.print("Digite o novo horário de início (yyyy-MM-dd HH:mm): ");
-                            String novoInicio = sc.nextLine();
-                            System.out.print("Digite o novo horário de fim (yyyy-MM-dd HH:mm): ");
-                            String novoFim = sc.nextLine();
+                            case 3:
+                                // Atualizar horário de reserva
+                                System.out.print("Digite o ID da reserva a ser atualizada: ");
+                                int reservaId = sc.nextInt();
+                                sc.nextLine();
 
-                            boolean horarioAtualizado = reservaDAO.updateHorarioReserva(reservaId, novoInicio, novoFim);
+                                System.out.print("Digite o novo horário de início (yyyy-MM-dd HH:mm): ");
+                                String novoInicio = sc.nextLine();
+                                System.out.print("Digite o novo horário de fim (yyyy-MM-dd HH:mm): ");
+                                String novoFim = sc.nextLine();
 
-                            if (horarioAtualizado) {
-                                System.out.println("Horário da reserva atualizado com sucesso.");
-                            } else {
-                                System.out.println("Falha ao atualizar o horário da reserva.");
-                            }
-                            break;
+                                boolean horarioAtualizado = reservaDAO.updateHorarioReserva(reservaId, novoInicio, novoFim);
 
-                        case 4:
-                            // Visualizar todos os agendamentos
-                            System.out.println("Todos os agendamentos:");
-                            reservaDAO.selectAllReservas();
-                            break;
+                                if (horarioAtualizado) {
+                                    System.out.println("Horário da reserva atualizado com sucesso.");
+                                } else {
+                                    System.out.println("Falha ao atualizar o horário da reserva.");
+                                }
+                                break;
 
-                        default:
-                            System.out.println("Opção inválida! Tente novamente.");
-                            break;
+                            case 4:
+                                // Visualizar todos os agendamentos
+                                System.out.println("Todos os agendamentos:");
+                                reservaDAO.selectAllReservas();
+                                break;
+
+                            case 5:
+                                // Ele deve apenas sair desse loop e voltar ao loop do sistema (que engloba tudo)
+                                subFlag = false;
+                                break;
+
+                            default:
+                                System.out.println("Opção inválida! Tente novamente.");
+                                break;
+                        }
                     }
                     break;
 

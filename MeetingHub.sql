@@ -21,7 +21,7 @@ USE `MeetingHub` ;
 -- Table `MeetingHub`.`Sala`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `MeetingHub`.`Sala` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45) NULL,
   `capacidade` VARCHAR(45) NULL,
   `recursos_disponiveis` VARCHAR(45) NULL,
@@ -33,10 +33,11 @@ ENGINE = InnoDB;
 -- Table `MeetingHub`.`Reserva`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `MeetingHub`.`Reserva` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `data_hora_inicio` VARCHAR(45) NULL,
   `data_hora_fim` VARCHAR(45) NULL,
   `Sala_id` INT NOT NULL,
+  `emailFunc` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`, `Sala_id`),
   INDEX `fk_Reserva_Sala1_idx` (`Sala_id` ASC) VISIBLE,
   CONSTRAINT `fk_Reserva_Sala1`
@@ -51,28 +52,30 @@ ENGINE = InnoDB;
 -- Table `MeetingHub`.`Funcionario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `MeetingHub`.`Funcionario` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45) NULL,
   `email` VARCHAR(45) NULL,
   `cargo` VARCHAR(45) NULL,
-  `Reserva_id` INT NOT NULL,
-  PRIMARY KEY (`id`, `Reserva_id`),
-  INDEX `fk_Funcionario_Reserva_idx` (`Reserva_id` ASC) VISIBLE,
+  `Reserva_id` INT NULL,
+  PRIMARY KEY (`id`),  -- Definindo `id` como chave primária
+  UNIQUE KEY `unique_reserva_id` (`Reserva_id`),  -- Restringe valores únicos para `Reserva_id`
+  INDEX `fk_Funcionario_Reserva_idx` (`Reserva_id` ASC),
   CONSTRAINT `fk_Funcionario_Reserva`
     FOREIGN KEY (`Reserva_id`)
     REFERENCES `MeetingHub`.`Reserva` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+
 
 
 -- -----------------------------------------------------
 -- Table `MeetingHub`.`Recurso`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `MeetingHub`.`Recurso` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45) NULL,
-  `quantidade` VARCHAR(45) NULL,
+  `quantidade` INT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -83,6 +86,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `MeetingHub`.`Sala_has_Recurso` (
   `Sala_id` INT NOT NULL,
   `Recurso_id` INT NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`Sala_id`, `Recurso_id`),
   INDEX `fk_Sala_has_Recurso_Recurso1_idx` (`Recurso_id` ASC) VISIBLE,
   INDEX `fk_Sala_has_Recurso_Sala1_idx` (`Sala_id` ASC) VISIBLE,
@@ -98,29 +102,16 @@ CREATE TABLE IF NOT EXISTS `MeetingHub`.`Sala_has_Recurso` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
--- Permitir que a coluna Reserva_id aceite valores nulos
-ALTER TABLE `MeetingHub`.`Funcionario` 
-MODIFY COLUMN `Reserva_id` INT NULL;
-
--- Configurar os campos id para serem auto-incremento
-ALTER TABLE `MeetingHub`.`Sala` 
-MODIFY COLUMN `id` INT NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `MeetingHub`.`Reserva` 
-MODIFY COLUMN `id` INT NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `MeetingHub`.`Funcionario` 
-MODIFY COLUMN `id` INT NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `MeetingHub`.`Recurso` 
-MODIFY COLUMN `id` INT NOT NULL AUTO_INCREMENT;
-
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 SHOW TABLES;
 SELECT * FROM funcionario;
+SELECT * FROM sala;
+SELECT * FROM recurso;
+SELECT * FROM reserva;
+-- DROP SCHEMA IF EXISTS `MeetingHub`;
 
 -- Inserir salas
 INSERT INTO `MeetingHub`.`Sala` (id, nome, capacidade, recursos_disponiveis) 
@@ -132,7 +123,7 @@ VALUES
 -- Inserir recursos
 INSERT INTO `MeetingHub`.`Recurso` (id, nome, quantidade) 
 VALUES 
-    ('1', 'TV', '5'),
+    ('1', 'Televisão', '5'),
     ('2', 'Quadro Branco', '10'),
     ('3', 'Microfone', '15'),
     ('4', 'Folhas', '200'),

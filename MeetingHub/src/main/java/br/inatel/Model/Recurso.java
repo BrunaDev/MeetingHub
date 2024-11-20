@@ -2,9 +2,9 @@ package br.inatel.Model;
 
 public class Recurso {
     private String nome;
-    private String quantidade;
+    private int quantidade;
 
-    public Recurso(String nome, String quantidade) {
+    public Recurso(String nome, int quantidade) {
         this.nome = nome;
         this.quantidade = quantidade;
     }
@@ -13,7 +13,7 @@ public class Recurso {
         return nome;
     }
 
-    public String getQuantidade() {
+    public int getQuantidade() {
         return quantidade;
     }
 }

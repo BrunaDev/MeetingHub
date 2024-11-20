@@ -19,7 +19,6 @@ public class ConnectionDAO {
     public void connectToDB(){
         try{
             con = DriverManager.getConnection(url, user, password);
-            System.out.println("Banco conectado!");
         } catch (SQLException exc) {
             System.out.println("Erro: " + exc.getMessage());
         }
