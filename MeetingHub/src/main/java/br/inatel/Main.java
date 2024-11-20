@@ -64,12 +64,23 @@ public class Main {
 
                     boolean exist = funcionarioDAO.selectFuncionario(emailFunc);
 
-                    if(exist){
+                    if (exist) {
                         Reserva novaReserva = new Reserva(data_hora_inicio, data_hora_fim, idSala, emailFunc);
-                        reservaDAO.insertReserva(novaReserva);
-                        //precisamos atualizar o funcionario para passar a reserva_id
+                        int reservaId = reservaDAO.insertReserva(novaReserva);
+
+                        if (reservaId != -1) {
+                            boolean updateSuccess = funcionarioDAO.updateFuncionarioReserva(emailFunc, reservaId);
+
+                            if (updateSuccess) {
+                                System.out.println("Reserva criada e associada ao funcionário com sucesso!");
+                            } else {
+                                System.out.println("Erro ao associar a reserva ao funcionário.");
+                            }
+                        } else {
+                            System.out.println("Erro ao criar a reserva.");
+                        }
                     } else {
-                        System.out.println("Falha ao solicitar sala.");
+                        System.out.println("Funcionário não encontrado. Falha ao solicitar sala.");
                     }
 
                     break;

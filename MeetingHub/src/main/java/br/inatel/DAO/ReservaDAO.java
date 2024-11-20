@@ -10,30 +10,35 @@ public class ReservaDAO extends ConnectionDAO {
     boolean sucesso = false;
 
     //------------------------INSERIR NOVA RESERVA----------------------------
-    public boolean insertReserva(Reserva reserva) {
+    public int insertReserva(Reserva reserva) {
         connectToDB();
-        String sql = "INSERT INTO reserva (data_hora_inicio, data_hora_fim, Sala_id, emailFunc) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO reserva (data_hora_inicio, data_hora_fim, id_sala, email_funcionario) VALUES (?,?,?,?)";
+        int reservaId = -1;
 
         try {
-            pst = con.prepareStatement(sql);
+            pst = con.prepareStatement(sql, st.RETURN_GENERATED_KEYS);
             pst.setString(1, reserva.getDataHoraInicio());
             pst.setString(2, reserva.getDataHoraFim());
             pst.setInt(3, reserva.getSalaID());
             pst.setString(4, reserva.getEmail());
-            pst.execute();
-            sucesso = true;
+            pst.executeUpdate();
+
+            rs = pst.getGeneratedKeys();
+            if (rs.next()) {
+                reservaId = rs.getInt(1); // Obtem o ID gerado
+            }
         } catch (SQLException ex) {
-            System.out.println("Erro de conexão = " + ex.getMessage());
-            sucesso = false;
+            System.out.println("Erro ao inserir reserva: " + ex.getMessage());
         } finally {
             try {
+                if (rs != null) rs.close();
                 if (pst != null) pst.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
-                System.out.println("Erro ao fechar conexão = " + e.getMessage());
+                System.out.println("Erro ao fechar conexão: " + e.getMessage());
             }
         }
-        return sucesso;
+        return reservaId;
     }
 
     //------------------------SELECIONAR RESERVAS POR SALA----------------------------

@@ -35,7 +35,6 @@ public class FuncionarioDAO extends ConnectionDAO {
     }
 
     //------------------------BUSCAR FUNCIONARIO NO DATABASE----------------------------
-    // Erro: Erro de conexão = Unknown column 'email' in 'field list'
     public boolean selectFuncionario(String emailFuncionario) {
         connectToDB();
         String sql = "SELECT * FROM funcionario WHERE email = ?";
@@ -59,4 +58,30 @@ public class FuncionarioDAO extends ConnectionDAO {
         }
         return exist;
     }
+
+    //------------------------ATUALIZAR FUNCIONARIO NO DATABASE----------------------------
+    public boolean updateFuncionarioReserva(String email, int reservaId) {
+        connectToDB();
+        String sql = "UPDATE funcionario SET reserva_id = ? WHERE email = ?";
+        boolean sucesso = false;
+
+        try {
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, reservaId);
+            pst.setString(2, email);
+            pst.executeUpdate();
+            sucesso = true;
+        } catch (SQLException ex) {
+            System.out.println("Erro ao atualizar funcionário: " + ex.getMessage());
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexão: " + e.getMessage());
+            }
+        }
+        return sucesso;
+    }
+
 }
