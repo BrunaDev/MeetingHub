@@ -3,4 +3,4 @@
 </h1>
 
 ## Links
-- [Vídeo explicativo](https://github.com/BrunaDev/MeetingHub)
+- [Vídeo explicativo](https://youtu.be/WxQjgPpjJd8)
