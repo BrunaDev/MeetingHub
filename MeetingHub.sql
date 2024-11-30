@@ -111,6 +111,7 @@ SELECT * FROM funcionario;
 SELECT * FROM sala;
 SELECT * FROM recurso;
 SELECT * FROM reserva;
+SELECT * FROM sala_has_recurso;
 -- DROP SCHEMA IF EXISTS `MeetingHub`;
 
 -- Inserir salas

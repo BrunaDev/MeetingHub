@@ -4,7 +4,6 @@ import br.inatel.Model.Funcionario;
 import br.inatel.Model.Reserva;
 import java.sql.SQLException;
 
-// seria bom armazenar o email de quem reservou a sala
 public class ReservaDAO extends ConnectionDAO {
 
     boolean sucesso = false;
@@ -12,7 +11,7 @@ public class ReservaDAO extends ConnectionDAO {
     //------------------------INSERIR NOVA RESERVA----------------------------
     public int insertReserva(Reserva reserva) {
         connectToDB();
-        String sql = "INSERT INTO reserva (data_hora_inicio, data_hora_fim, id_sala, email_funcionario) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO reserva (data_hora_inicio, data_hora_fim, Sala_id, emailFunc) VALUES (?,?,?,?)";
         int reservaId = -1;
 
         try {

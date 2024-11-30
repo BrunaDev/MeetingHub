@@ -53,7 +53,7 @@ public class Main {
                     String emailFunc = sc.nextLine();
 
                     System.out.print("Escolha a sala (1 - Sala de reunião, 2 - Sala de recreação, 3 - Sala de apresentação): ");
-                    int idSala = sc.nextInt();
+                    int Sala_id = sc.nextInt();
                     sc.nextLine();
 
                     System.out.print("Qual o horário da reunião? ");
@@ -65,7 +65,7 @@ public class Main {
                     boolean exist = funcionarioDAO.selectFuncionario(emailFunc);
 
                     if (exist) {
-                        Reserva novaReserva = new Reserva(data_hora_inicio, data_hora_fim, idSala, emailFunc);
+                        Reserva novaReserva = new Reserva(data_hora_inicio, data_hora_fim, Sala_id, emailFunc);
                         int reservaId = reservaDAO.insertReserva(novaReserva);
 
                         if (reservaId != -1) {
@@ -198,9 +198,9 @@ public class Main {
                                 int reservaId = sc.nextInt();
                                 sc.nextLine();
 
-                                System.out.print("Digite o novo horário de início (yyyy-MM-dd HH:mm): ");
+                                System.out.print("Digite o novo horário de início (HH:3mm): ");
                                 String novoInicio = sc.nextLine();
-                                System.out.print("Digite o novo horário de fim (yyyy-MM-dd HH:mm): ");
+                                System.out.print("Digite o novo horário de fim (HH:mm): ");
                                 String novoFim = sc.nextLine();
 
                                 boolean horarioAtualizado = reservaDAO.updateHorarioReserva(reservaId, novoInicio, novoFim);
